@@ -10,7 +10,7 @@ import React, {useEffect} from 'react';
 import {SafeAreaView, useColorScheme} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import NavigationComponent from './NavigationComponent';
-import {PermissionsAndroid} from 'react-native';
+import {PermissionsAndroid, PlatformOSType} from 'react-native';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -34,8 +34,9 @@ const App = () => {
         console.warn(err);
       }
     };
-
-    requestLocationPermission();
+    if (PlatformOSType === 'android') {
+      requestLocationPermission();
+    }
   }, []);
 
   return (
