@@ -56,6 +56,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>Place your public token in your Xcode project&apos;s `Info.plist` and add a `MBXAccessToken` key whose value is your public access token.
+Place your public token in your Xcode project&apos;s `Info.plist` and add a `MBXAccessToken` key whose value is your public access token.
+</key>
+	<string></string>
+	<key>MBXAccessToken</key>
+	<string>pk.eyJ1IjoibWljYWgtZWZmaW9uZyIsImEiOiJjbGo1b3N6eGIwMzh0M2pxeGVjeHBmNTJqIn0.AmeyJq6ugQg9ocl6dR5lIg</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

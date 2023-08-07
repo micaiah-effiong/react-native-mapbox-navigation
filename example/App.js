@@ -11,12 +11,14 @@ import {SafeAreaView, useColorScheme} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import NavigationComponent from './NavigationComponent';
 import {PermissionsAndroid, PlatformOSType} from 'react-native';
+import {RNTMapboxNavigation} from '@homee/react-native-mapbox-navigation';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    textColor: 'red',
     flex: 1,
   };
 
@@ -45,6 +47,7 @@ const App = () => {
         origin={[-105.140629, 39.760194]}
         destination={[-105.156544, 39.761801]}
       />
+      <RNTMapboxNavigation />
     </SafeAreaView>
   );
 };
