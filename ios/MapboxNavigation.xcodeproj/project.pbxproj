@@ -13,6 +13,7 @@
 		E28E53BB2A81633900B2CA2D /* RNTMapBoxNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28E53BA2A81633900B2CA2D /* RNTMapBoxNavigationView.swift */; };
 		E28E53BD2A81634D00B2CA2D /* RNTMapBoxNavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28E53BC2A81634D00B2CA2D /* RNTMapBoxNavigationManager.swift */; };
 		E28E53BF2A81638400B2CA2D /* RNTMapBoxNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E28E53BE2A81638400B2CA2D /* RNTMapBoxNavigationManager.m */; };
+		E28E53C32A8242EF00B2CA2D /* RNTFreeDriveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28E53C22A8242EE00B2CA2D /* RNTFreeDriveViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,6 +37,7 @@
 		E28E53BA2A81633900B2CA2D /* RNTMapBoxNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNTMapBoxNavigationView.swift; sourceTree = "<group>"; };
 		E28E53BC2A81634D00B2CA2D /* RNTMapBoxNavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNTMapBoxNavigationManager.swift; sourceTree = "<group>"; };
 		E28E53BE2A81638400B2CA2D /* RNTMapBoxNavigationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTMapBoxNavigationManager.m; sourceTree = "<group>"; };
+		E28E53C22A8242EE00B2CA2D /* RNTFreeDriveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNTFreeDriveViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,7 @@
 			children = (
 				E28E53BA2A81633900B2CA2D /* RNTMapBoxNavigationView.swift */,
 				E28E53BC2A81634D00B2CA2D /* RNTMapBoxNavigationManager.swift */,
+				E28E53C22A8242EE00B2CA2D /* RNTFreeDriveViewController.swift */,
 				E28E53BE2A81638400B2CA2D /* RNTMapBoxNavigationManager.m */,
 				957B8818244753D70058C6C1 /* MapboxNavigationManager.m */,
 				957B8819244753D70058C6C1 /* MapboxNavigationManager.swift */,
@@ -133,6 +136,7 @@
 				E28E53BF2A81638400B2CA2D /* RNTMapBoxNavigationManager.m in Sources */,
 				E28E53BD2A81634D00B2CA2D /* RNTMapBoxNavigationManager.swift in Sources */,
 				957B881D244753D70058C6C1 /* MapboxNavigationManager.swift in Sources */,
+				E28E53C32A8242EF00B2CA2D /* RNTFreeDriveViewController.swift in Sources */,
 				E28E53BB2A81633900B2CA2D /* RNTMapBoxNavigationView.swift in Sources */,
 				957B881A244753D70058C6C1 /* MapboxNavigationView.swift in Sources */,
 			);
