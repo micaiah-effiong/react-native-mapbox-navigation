@@ -38,7 +38,7 @@ target 'BasicApp' do
           bc.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
       end
     end
-    # $RNMBNAV.post_install(installer)
-    $RNMBNAV.pre_install(installer)
+    $RNMBNAV.post_install(installer)
+    # $RNMBNAV.pre_install(installer)
   end
 end
