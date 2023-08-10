@@ -18,6 +18,7 @@ import MapboxDirections
 class RNTNavigationViewController: UIViewController, NavigationViewControllerDelegate {
 
     var navigationView: NavigationView!
+    private var _navigationViewController: NavigationViewController?
    
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +27,12 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
         navigationView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(navigationView)
 
+        setUpNavigationView()
+
+        startNavigation()
+    }
+    
+    private func setUpNavigationView() {
         NSLayoutConstraint.activate([
             navigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             navigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -37,7 +44,9 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
                                                                        viewportDataSourceType: .raw)
         navigationView.navigationMapView.navigationCamera.viewportDataSource = navigationViewportDataSource
         navigationView.navigationMapView.navigationCamera.follow()
-
+    }
+    
+    public func startNavigation(){
         let navigationRouteOptions = NavigationRouteOptions(coordinates: [
             CLLocationCoordinate2D(latitude: 37.77766, longitude: -122.43199),
             CLLocationCoordinate2D(latitude: 37.77536, longitude: -122.43494)
@@ -57,6 +66,8 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
                
                 let navigationViewController = NavigationViewController(for: IndexedRouteResponse(routeResponse: routeResponse, routeIndex: 0),navigationOptions: navigationOptions)
                 
+                self._navigationViewController = navigationViewController
+                
                 navigationViewController.delegate = self
                 addChild(navigationViewController)
                 view.addSubview(navigationViewController.view)
@@ -64,6 +75,8 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
 //                navigationViewController.modalPresentationStyle = .fullScreen
                 navigationViewController.routeLineTracksTraversal = true
                 navigationViewController.navigationMapView?.localizeLabels()
+                navigationViewController.showsEndOfRouteFeedback = true
+                navigationViewController.showsReportFeedback = false
                 
                 
                 navigationViewController.view.backgroundColor = .gray
@@ -71,9 +84,7 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
 
                 // Make sure to set `transitioningDelegate` to be a current instance of `ViewController`.
                 navigationViewController.transitioningDelegate = self
-//
-                // Make sure to present `NavigationViewController` in animated way.
-                
+
                 NSLayoutConstraint.activate([
                     navigationViewController.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0),
                     navigationViewController.view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0),
@@ -82,10 +93,52 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
                 ])
                 self.didMove(toParent: self)
                 
+                // Make sure to present `NavigationViewController` in animated way.
 //                self.present(navigationViewController, animated: true, completion: nil)
             }
         }
     }
+    
+    public func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {
+        if(!canceled) {
+            return ()
+        }
+        
+        guard let nVController = self._navigationViewController  else { return }
+        
+        nVController.view.removeFromSuperview()
+        nVController.removeFromParent()
+        self._navigationViewController = nil
+
+        nVController.navigationService.endNavigation(feedback: nil)
+        
+        nVController.dismiss(animated: true, completion: {
+            let navigationMapView = self.navigationView.navigationMapView
+
+            let navigationViewportDataSource = NavigationViewportDataSource(navigationMapView.mapView,   viewportDataSourceType: .raw)
+
+            navigationMapView.navigationCamera.viewportDataSource = navigationViewportDataSource
+        })
+        
+        
+        // expose this activity to react [END TRIP]
+    }
+    
+//    public func navigationViewController(_ navigationViewController: NavigationViewController, shouldRerouteFrom location: CLLocation) -> Bool {
+//            return false// use _shouldReRoute value
+//    }
+        
+    public func navigationViewController(_ navigationViewController: NavigationViewController, didSubmitArrivalFeedback feedback: EndOfRouteFeedback) {
+        print("Feedback comment", feedback.comment ?? "no comment", "Feedback rating", feedback.rating ?? 0.2)
+        
+        // expose this activity to react [GET FEEDBACK]
+    }
+    
+    func navigationViewController(_ navigationViewController: NavigationViewController, didArriveAt waypoint: Waypoint) -> Bool {
+      print("ARRIVED =>>>>>>>")
+      return true;
+    }
+    
 }
 
 // Transition that is used for `NavigationViewController` presentation.

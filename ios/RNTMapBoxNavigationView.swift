@@ -17,6 +17,7 @@ class RNTMapBoxNavigationView: UIView {
     @objc let navigationViewController: UIViewController = RNTNavigationViewController()
     
     override init(frame: CGRect) {
+        // make navigation view fit parent frame in embeded navigation
         navigationViewController.view.frame = frame
         super.init(frame: frame)
         
