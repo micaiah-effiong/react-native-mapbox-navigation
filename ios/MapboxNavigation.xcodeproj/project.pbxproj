@@ -14,6 +14,8 @@
 		E28E53BD2A81634D00B2CA2D /* RNTMapBoxNavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28E53BC2A81634D00B2CA2D /* RNTMapBoxNavigationManager.swift */; };
 		E28E53BF2A81638400B2CA2D /* RNTMapBoxNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E28E53BE2A81638400B2CA2D /* RNTMapBoxNavigationManager.m */; };
 		E28E53C32A8242EF00B2CA2D /* RNTFreeDriveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28E53C22A8242EE00B2CA2D /* RNTFreeDriveViewController.swift */; };
+		E2F35C7C2A83A3E9005CDEFC /* RNTNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F35C7B2A83A3E9005CDEFC /* RNTNavigationView.swift */; };
+		E2FA3F152A828BAF00EDC13D /* RNTNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FA3F142A828BAF00EDC13D /* RNTNavigationViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +40,8 @@
 		E28E53BC2A81634D00B2CA2D /* RNTMapBoxNavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNTMapBoxNavigationManager.swift; sourceTree = "<group>"; };
 		E28E53BE2A81638400B2CA2D /* RNTMapBoxNavigationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTMapBoxNavigationManager.m; sourceTree = "<group>"; };
 		E28E53C22A8242EE00B2CA2D /* RNTFreeDriveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNTFreeDriveViewController.swift; sourceTree = "<group>"; };
+		E2F35C7B2A83A3E9005CDEFC /* RNTNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNTNavigationView.swift; sourceTree = "<group>"; };
+		E2FA3F142A828BAF00EDC13D /* RNTNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNTNavigationViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +67,8 @@
 			isa = PBXGroup;
 			children = (
 				E28E53BA2A81633900B2CA2D /* RNTMapBoxNavigationView.swift */,
+				E2FA3F142A828BAF00EDC13D /* RNTNavigationViewController.swift */,
+				E2F35C7B2A83A3E9005CDEFC /* RNTNavigationView.swift */,
 				E28E53BC2A81634D00B2CA2D /* RNTMapBoxNavigationManager.swift */,
 				E28E53C22A8242EE00B2CA2D /* RNTFreeDriveViewController.swift */,
 				E28E53BE2A81638400B2CA2D /* RNTMapBoxNavigationManager.m */,
@@ -134,9 +140,11 @@
 			files = (
 				957B881C244753D70058C6C1 /* MapboxNavigationManager.m in Sources */,
 				E28E53BF2A81638400B2CA2D /* RNTMapBoxNavigationManager.m in Sources */,
+				E2F35C7C2A83A3E9005CDEFC /* RNTNavigationView.swift in Sources */,
 				E28E53BD2A81634D00B2CA2D /* RNTMapBoxNavigationManager.swift in Sources */,
 				957B881D244753D70058C6C1 /* MapboxNavigationManager.swift in Sources */,
 				E28E53C32A8242EF00B2CA2D /* RNTFreeDriveViewController.swift in Sources */,
+				E2FA3F152A828BAF00EDC13D /* RNTNavigationViewController.swift in Sources */,
 				E28E53BB2A81633900B2CA2D /* RNTMapBoxNavigationView.swift in Sources */,
 				957B881A244753D70058C6C1 /* MapboxNavigationView.swift in Sources */,
 			);

@@ -7,10 +7,10 @@
  */
 
 import React, {useEffect} from 'react';
-import {SafeAreaView, useColorScheme} from 'react-native';
+import {SafeAreaView, View, useColorScheme} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import NavigationComponent from './NavigationComponent';
-import {PermissionsAndroid, PlatformOSType} from 'react-native';
+import {PermissionsAndroid, Text, PlatformOSType} from 'react-native';
 import {RNTMapboxNavigation} from '@homee/react-native-mapbox-navigation';
 
 const App = () => {
@@ -47,7 +47,9 @@ const App = () => {
         origin={[-105.140629, 39.760194]}
         destination={[-105.156544, 39.761801]}
       />*/}
+      <Text> Hi dsfds </Text>
       <RNTMapboxNavigation />
+      <Text> Hi dsfds </Text>
     </SafeAreaView>
   );
 };
