@@ -15,41 +15,63 @@ import MapboxDirections
 
 
 @objc(RNTNavigationViewController)
-class RNTNavigationViewController: UIViewController, NavigationViewControllerDelegate {
+class RNTNavigationViewController: UIViewController, NavigationViewControllerDelegate, NavigationMapViewDelegate {
 
     var navigationView: NavigationView!
+    var navigationMapView: NavigationMapView!
     private var _navigationViewController: NavigationViewController?
+    private var routeColor: UIColor?
    
     override func viewDidLoad() {
         super.viewDidLoad()
-
         navigationView = NavigationView(frame: view.frame)
-        navigationView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(navigationView)
+        navigationMapView = navigationView.navigationMapView
+        
+        navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        navigationMapView.delegate = self
+        navigationMapView.userLocationStyle = .puck2D()
+        
+        navigationMapView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(navigationMapView)
 
         setUpNavigationView()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
+            self.startNavigation()
+        })
 
-        startNavigation()
     }
     
     private func setUpNavigationView() {
         NSLayoutConstraint.activate([
-            navigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            navigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            navigationView.topAnchor.constraint(equalTo: view.topAnchor),
-            navigationView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            navigationMapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            navigationMapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            navigationMapView.topAnchor.constraint(equalTo: view.topAnchor),
+            navigationMapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
-        let navigationViewportDataSource = NavigationViewportDataSource(navigationView.navigationMapView.mapView,
-                                                                       viewportDataSourceType: .raw)
+        let navigationViewportDataSource = NavigationViewportDataSource(navigationView.navigationMapView.mapView, viewportDataSourceType: .raw)
         navigationView.navigationMapView.navigationCamera.viewportDataSource = navigationViewportDataSource
         navigationView.navigationMapView.navigationCamera.follow()
     }
     
+    public func addFloatingNavigationButton(button: UIButton){
+        self._navigationViewController?.navigationView.floatingStackView.addArrangedSubview(button)
+    }
+    
+    public func setDefaultRouteColor(red: Int, green: Int, blue: Int, alpha: CGFloat = 1.0){
+        let _red = CGFloat(red) / 255.0
+        let _green = CGFloat(green) / 255.0
+        let _blue = CGFloat(blue) / 255.0
+        
+        self.routeColor = UIColor(red: _red, green: _green, blue: _blue, alpha: alpha)
+        // expose this activity to react [SET ROUTE COLOR TRIP]
+    }
+    
     public func startNavigation(){
         let navigationRouteOptions = NavigationRouteOptions(coordinates: [
-            CLLocationCoordinate2D(latitude: 37.77766, longitude: -122.43199),
-            CLLocationCoordinate2D(latitude: 37.77536, longitude: -122.43494)
+            CLLocationCoordinate2D(latitude: 4.824532, longitude: 6.987516),
+            CLLocationCoordinate2D(latitude: 4.8237162, longitude: 6.9919064)
         ])
 
         // Request a route and present `NavigationViewController`.
@@ -59,27 +81,33 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
                 print("Error occured: \(error.localizedDescription)")
             case .success(let routeResponse):
                 guard let self = self else { return }
-               
+
                 let navigationService = MapboxNavigationService(indexedRouteResponse: IndexedRouteResponse(routeResponse: routeResponse, routeIndex: 0), credentials: NavigationSettings.shared.directions.credentials, simulating: .always)
                
                 let navigationOptions = NavigationOptions(navigationService: navigationService)
-               
+                
                 let navigationViewController = NavigationViewController(for: IndexedRouteResponse(routeResponse: routeResponse, routeIndex: 0),navigationOptions: navigationOptions)
                 
                 self._navigationViewController = navigationViewController
                 
                 navigationViewController.delegate = self
-                addChild(navigationViewController)
+                // addChild(navigationViewController)
+
                 view.addSubview(navigationViewController.view)
                 
-//                navigationViewController.modalPresentationStyle = .fullScreen
+                if(self.routeColor != nil){
+                    navigationViewController.navigationView.navigationMapView.trafficUnknownColor = .systemGreen
+                    navigationViewController.navigationView.navigationMapView.trafficLowColor = .systemGreen
+                    navigationViewController.navigationView.navigationMapView.routeCasingColor = UIColor(white: 1, alpha: 0.8)
+                }
+                
+                
+                // navigationViewController.modalPresentationStyle = .fullScreen
                 navigationViewController.routeLineTracksTraversal = true
                 navigationViewController.navigationMapView?.localizeLabels()
                 navigationViewController.showsEndOfRouteFeedback = true
                 navigationViewController.showsReportFeedback = false
                 
-                
-                navigationViewController.view.backgroundColor = .gray
                 navigationViewController.view.translatesAutoresizingMaskIntoConstraints = false
 
                 // Make sure to set `transitioningDelegate` to be a current instance of `ViewController`.
@@ -94,15 +122,13 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
                 self.didMove(toParent: self)
                 
                 // Make sure to present `NavigationViewController` in animated way.
-//                self.present(navigationViewController, animated: true, completion: nil)
+                // self.present(navigationViewController, animated: true, completion: nil)
             }
         }
     }
     
-    public func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {
-        if(!canceled) {
-            return ()
-        }
+    public func endNavigation() {
+        // expose this activity to react via module property [END NAVIGATION]
         
         guard let nVController = self._navigationViewController  else { return }
         
@@ -115,30 +141,30 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
         nVController.dismiss(animated: true, completion: {
             let navigationMapView = self.navigationView.navigationMapView
 
-            let navigationViewportDataSource = NavigationViewportDataSource(navigationMapView.mapView,   viewportDataSourceType: .raw)
+            let navigationViewportDataSource = NavigationViewportDataSource(navigationMapView.mapView, viewportDataSourceType: .raw)
 
             navigationMapView.navigationCamera.viewportDataSource = navigationViewportDataSource
         })
-        
-        
-        // expose this activity to react [END TRIP]
     }
     
-//    public func navigationViewController(_ navigationViewController: NavigationViewController, shouldRerouteFrom location: CLLocation) -> Bool {
-//            return false// use _shouldReRoute value
-//    }
+    public func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {
+        if(!canceled) {
+            return ()
+        }
+        // expose this activity to react via event [ON CANCEL]
+        self.endNavigation()
+    }
         
     public func navigationViewController(_ navigationViewController: NavigationViewController, didSubmitArrivalFeedback feedback: EndOfRouteFeedback) {
         print("Feedback comment", feedback.comment ?? "no comment", "Feedback rating", feedback.rating ?? 0.2)
-        
-        // expose this activity to react [GET FEEDBACK]
+        // expose this activity to react via event [ON FEEDBACK]
     }
     
-    func navigationViewController(_ navigationViewController: NavigationViewController, didArriveAt waypoint: Waypoint) -> Bool {
-      print("ARRIVED =>>>>>>>")
-      return true;
+    func navigationViewController(_ navigationViewController: NavigationViewController, didArriveAt waypoint: Waypoint) {
+        // expose this activity to react via event [ON ARRIVE]
+        print("ARRIVED =>>>>>>>")
+        return ()
     }
-    
 }
 
 // Transition that is used for `NavigationViewController` presentation.
