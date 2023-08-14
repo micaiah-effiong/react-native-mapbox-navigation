@@ -22,11 +22,13 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
     private var _navigationViewController: NavigationViewController?
     private var routeColor: UIColor?
     private var isNavigating: Bool = false
+    // private var resumeButton = ResumeButton()
    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationView = NavigationView(frame: view.frame)
         navigationMapView = navigationView.navigationMapView
+        // navigationView.speedLimitView = SpeedLimitView()
         
         navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
@@ -37,9 +39,7 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
         view.addSubview(navigationMapView)
 
         setUpNavigationView()
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
-//            self.startNavigation()
-//        })
+        // view.addSubview(resumeButton)
 
     }
     
@@ -54,6 +54,9 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
         let navigationViewportDataSource = NavigationViewportDataSource(navigationView.navigationMapView.mapView, viewportDataSourceType: .raw)
         navigationView.navigationMapView.navigationCamera.viewportDataSource = navigationViewportDataSource
         navigationView.navigationMapView.navigationCamera.follow()
+        
+        // resume button
+//        resumeButton.addTarget(self, action: #selector(moveCameraToCenter), for: .touchUpInside)
     }
     
     public func addFloatingNavigationButton(button: UIButton){
@@ -116,7 +119,7 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
                 navigationViewController.view.translatesAutoresizingMaskIntoConstraints = false
 
                 // Make sure to set `transitioningDelegate` to be a current instance of `ViewController`.
-                navigationViewController.transitioningDelegate = self
+//                navigationViewController.transitioningDelegate = self
 
                 NSLayoutConstraint.activate([
                     navigationViewController.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0),
@@ -132,6 +135,18 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
         }
     }
     
+    /** build and showcase route for navigatoin */
+    func previewRoute(){
+        
+        
+        // guard let routes = routeResponse.routes, let route = routeResponse.routes?.first else { return }
+        // navigationMapView.show(routes)
+        // self.navigationMapView.showWaypoints(on: route)
+        // self.navigationMapView.showcase(routes, routesPresentationStyle: .all(shouldFit: true), animated: true)
+        
+        // return
+    }
+    
     @objc public func endNavigation() {
         // expose this activity to react via module property [END NAVIGATION]
         
@@ -141,8 +156,6 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
         
         /** Prevent manipulation on application interface outside of main thread */
         DispatchQueue.main.async {
-            nVController.view.removeFromSuperview()
-            nVController.removeFromParent()
             self._navigationViewController = nil
             
             nVController.navigationService.endNavigation(feedback: nil)
@@ -154,9 +167,36 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
                 
                 navigationMapView.navigationCamera.viewportDataSource = navigationViewportDataSource
                 
+                /** animate removing navigation view */
+                UIView.animate(withDuration: 0.25, animations: {
+                    nVController.view.alpha = 0.0
+                }, completion: { finished in
+                    if finished {
+                        nVController.view.removeFromSuperview()
+                        nVController.removeFromParent()
+                    }
+                })
+                
                 self.isNavigating = false
             })
         }
+    }
+    
+    @objc private func moveCameraToCenter(){
+        guard !self.isNavigating else { return }
+        
+        navigationView.navigationMapView.navigationCamera.follow()
+        // navigationView.navigationMapView.navigationCamera.moveToOverview()
+    }
+    
+    @objc func didUpdatePassiveLocation(_ notification: Notification) {
+        // RoadName(text: <#T##String#>, language: <#T##String#>)
+        // Set the sign standard of the speed limit UI components
+        // to the standard posted by PassiveLocationManager
+        // speedLimitView.signStandard = notification.userInfo?[PassiveLocationManager.NotificationUserInfoKey.signStandardKey] as? SignStandard
+        // Set the value of the speed limit UI component to the value
+        // posted by PassiveLocationManager
+        // speedLimitView.speedLimit = notification.userInfo?[PassiveLocationManager.NotificationUserInfoKey.speedLimitKey] as? Measurement<UnitSpeed>
     }
     
     public func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {
@@ -177,63 +217,4 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
         print("ARRIVED =>>>>>>>")
         return ()
     }
-}
-
-// Transition that is used for `NavigationViewController` presentation.
-class PresentationTransition: NSObject, UIViewControllerAnimatedTransitioning {
-
-   func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-       return 0.0
-   }
-
-   func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-       guard let fromViewController = transitionContext.viewController(forKey: .from) as? RNTNavigationViewController,
-             let toViewController = transitionContext.viewController(forKey: .to) as? NavigationViewController else {
-           transitionContext.completeTransition(false)
-           return
-       }
-
-       // Re-use `NavigationMapView` instance in `NavigationViewController`.
-       toViewController.navigationMapView = fromViewController.navigationView.navigationMapView
-
-       transitionContext.containerView.addSubview(toViewController.view)
-       transitionContext.completeTransition(true)
-   }
-}
-
-// Transition that is used for `NavigationViewController` dismissal.
-class DismissalTransition: NSObject, UIViewControllerAnimatedTransitioning {
-
-   func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-       return 0.0
-   }
-
-   func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-       guard let fromViewController = transitionContext.viewController(forKey: .from) as? NavigationViewController,
-             let navigationMapView = fromViewController.navigationMapView,
-             let toViewController = transitionContext.viewController(forKey: .to) as? RNTNavigationViewController else {
-           transitionContext.completeTransition(false)
-           return
-       }
-
-       // Inject `NavigationMapView` instance that was previously used by `NavigationViewController` back to
-       // `ViewController`.
-       toViewController.navigationView.navigationMapView = navigationMapView
-
-       transitionContext.containerView.addSubview(toViewController.view)
-       transitionContext.completeTransition(true)
-   }
-}
-
-extension RNTNavigationViewController: UIViewControllerTransitioningDelegate {
-
-   public func animationController(forPresented presented: UIViewController,
-                                   presenting: UIViewController,
-                                   source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-       return PresentationTransition()
-   }
-
-   public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-       return DismissalTransition()
-   }
 }
