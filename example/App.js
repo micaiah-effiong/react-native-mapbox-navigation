@@ -7,14 +7,19 @@
  */
 
 import React, {useEffect} from 'react';
-import {SafeAreaView, View, useColorScheme} from 'react-native';
+import {SafeAreaView, View, useColorScheme, Button} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import NavigationComponent from './NavigationComponent';
 import {PermissionsAndroid, Text, PlatformOSType} from 'react-native';
-import {RNTMapboxNavigation} from '@homee/react-native-mapbox-navigation';
+import {
+  RNTMapboxNavigation,
+  useRnMapboxNavigation,
+} from '@homee/react-native-mapbox-navigation';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
+
+  const {startNavigation, endNavigation} = useRnMapboxNavigation();
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -50,6 +55,8 @@ const App = () => {
       <Text> Hi dsfds </Text>
       <RNTMapboxNavigation />
       <Text> Hi dsfds </Text>
+      <Button onPress={() => startNavigation()} title="Start navigation" />
+      <Button onPress={() => endNavigation()} title="End navigation" />
     </SafeAreaView>
   );
 };

@@ -21,6 +21,7 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
     var navigationMapView: NavigationMapView!
     private var _navigationViewController: NavigationViewController?
     private var routeColor: UIColor?
+    private var isNavigating: Bool = false
    
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,9 +37,9 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
         view.addSubview(navigationMapView)
 
         setUpNavigationView()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
-            self.startNavigation()
-        })
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
+//            self.startNavigation()
+//        })
 
     }
     
@@ -68,11 +69,15 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
         // expose this activity to react [SET ROUTE COLOR TRIP]
     }
     
-    public func startNavigation(){
+    @objc public func startNavigation(){
         let navigationRouteOptions = NavigationRouteOptions(coordinates: [
             CLLocationCoordinate2D(latitude: 4.824532, longitude: 6.987516),
             CLLocationCoordinate2D(latitude: 4.8237162, longitude: 6.9919064)
         ])
+        
+        guard !self.isNavigating else { return }
+        
+        self.isNavigating = true
 
         // Request a route and present `NavigationViewController`.
         Directions.shared.calculate(navigationRouteOptions) { [weak self] (_, result) in
@@ -127,24 +132,31 @@ class RNTNavigationViewController: UIViewController, NavigationViewControllerDel
         }
     }
     
-    public func endNavigation() {
+    @objc public func endNavigation() {
         // expose this activity to react via module property [END NAVIGATION]
         
         guard let nVController = self._navigationViewController  else { return }
         
-        nVController.view.removeFromSuperview()
-        nVController.removeFromParent()
-        self._navigationViewController = nil
-
-        nVController.navigationService.endNavigation(feedback: nil)
+        guard self.isNavigating else { return }
         
-        nVController.dismiss(animated: true, completion: {
-            let navigationMapView = self.navigationView.navigationMapView
-
-            let navigationViewportDataSource = NavigationViewportDataSource(navigationMapView.mapView, viewportDataSourceType: .raw)
-
-            navigationMapView.navigationCamera.viewportDataSource = navigationViewportDataSource
-        })
+        /** Prevent manipulation on application interface outside of main thread */
+        DispatchQueue.main.async {
+            nVController.view.removeFromSuperview()
+            nVController.removeFromParent()
+            self._navigationViewController = nil
+            
+            nVController.navigationService.endNavigation(feedback: nil)
+            
+            nVController.dismiss(animated: true, completion: {
+                let navigationMapView = self.navigationView.navigationMapView
+                
+                let navigationViewportDataSource = NavigationViewportDataSource(navigationMapView.mapView, viewportDataSourceType: .raw)
+                
+                navigationMapView.navigationCamera.viewportDataSource = navigationViewportDataSource
+                
+                self.isNavigating = false
+            })
+        }
     }
     
     public func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {

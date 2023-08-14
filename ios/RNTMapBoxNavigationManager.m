@@ -10,5 +10,6 @@
 #import "React/RCTViewManager.h"
 
 @interface RCT_EXTERN_MODULE(RNTMapBoxNavigationManager, RCTViewManager)
-
+RCT_EXTERN_METHOD(startNavigation)
+RCT_EXTERN_METHOD(endNavigation)
 @end
